@@ -17,7 +17,7 @@ DATA_DIR = Path("data/train")
 MODEL_PATH = Path("model.pt")
 IMG_SIZE = 224
 BATCH_SIZE = 32
-EPOCHS = 5
+EPOCHS = 20
 LR = 1e-3
 
 

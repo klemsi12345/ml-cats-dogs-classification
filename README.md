@@ -1,47 +1,60 @@
 # Cat vs Dog Classifier
 
 A simple ML app that classifies images as cats or dogs using transfer learning (ResNet18).
+Training data is sourced from [Google Open Images](https://storage.googleapis.com/openimages/web/index.html).
 
 ## Setup
 
-```bash
-python -m venv venv
-.\venv\Scripts\Activate.ps1   # Windows PowerShell
+```powershell
+& "C:\...\python3.12\python.exe" -m venv venv   # use Python 3.12 for CUDA support
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
+```
+
+For CUDA/GPU support, install PyTorch with CUDA wheels:
+
+```powershell
+python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
 ```
 
 ## Quick Start
 
-1. **Get training images** (choose one):
+1. **Download training images from Open Images:**
 
-   - **Option A – Download sample data:**
-     ```bash
-     python download_data.py
-     ```
-     Downloads 500 cats and 500 dogs from the public Oxford-IIIT Pet dataset into `data/train/`.
+   ```powershell
+   python download_data.py --cats 20000 --dogs 20000
+   ```
 
-   - **Option B – Use your own images:**
-     Place images in:
-     ```
-     data/train/cats/   ← cat images
-     data/train/dogs/   ← dog images
-     ```
+   Downloads up to 20,000 cat and 20,000 dog images from Google Open Images into `data/train/`.
+   Adjust counts as needed (e.g. `--cats 500 --dogs 500` for a quick test).
+
+   Or **use your own images** by placing them in:
+
+   ```
+   data/train/cats/   <- cat images
+   data/train/dogs/   <- dog images
+   ```
 
 2. **Train the model:**
-   ```bash
+
+   ```powershell
    python train.py
    ```
+
    Saves `model.pt` in the project root.
 
 3. **Classify images:**
 
    - **CLI:**
-     ```bash
+
+     ```powershell
      python predict.py path/to/image.jpg
      ```
 
    - **Web app:**
-     ```bash
+
+     ```powershell
      python -m streamlit run app.py
      ```
 
@@ -50,19 +63,22 @@ python -m pip install -r requirements.txt
 ```
 ml-cats-dogs-classification/
 ├── data/
-│   └── train/
-│       ├── cats/
-│       └── dogs/
-├── train.py         # Training script
-├── predict.py       # CLI prediction
-├── app.py           # Streamlit web app
-├── download_data.py # Download sample dataset
-├── model.pt         # Trained model (after training)
-└── requirements.txt
+│   ├── train/
+│   │   ├── cats/              # Training cat images
+│   │   └── dogs/              # Training dog images
+│   └── source/openimages/     # Raw Open Images download cache
+├── train.py                   # Training script (ResNet18 transfer learning)
+├── predict.py                 # CLI prediction
+├── app.py                     # Streamlit web app
+├── download_data.py           # Download images from Open Images
+├── model.pt                   # Trained model (generated after training)
+├── requirements.txt
+└── .gitignore
 ```
 
 ## Tips
 
-- More images → better accuracy. Aim for at least 100–200 per class.
-- Training uses GPU if available.
+- More images lead to better accuracy. Start with 500 per class for quick tests, scale to 20,000+ for production.
+- Training uses GPU automatically if CUDA is available (requires Python 3.12 + CUDA PyTorch build).
 - Increase `EPOCHS` in `train.py` for better results.
+- The download script is resumable: rerun it to top up existing images toward the target count.

@@ -50,7 +50,12 @@ def main():
     model, classes = load_model()
     if model is None:
         st.warning("No model found. Run `python train.py` first, then restart this app.")
-        st.info("Quick start: `python download_data.py` → `python train.py` → `streamlit run app.py`")
+        st.info(
+            "Quick start:\n"
+            "1. `python download_data.py --cats 500 --dogs 500`\n"
+            "2. `python train.py`\n"
+            "3. `python -m streamlit run app.py`"
+        )
         return
 
     uploaded = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
